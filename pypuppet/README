@@ -1,0 +1,17 @@
+Date: 3/15/2011
+Author: Corey Osman
+Email: corey@logicminds.biz
+Purpose:
+pypuppet is a wrapper module that is designed to hook into puppet via the rest api that puppetlabs has provided.  It is meant to be a library for other projects that rely on puppet data that require an easy to use puppet interface. 
+
+This module is currently in development stages and does not work. Please don't use this until it has reached beta status.  If you would like to contribute please get in touch me with.
+
+Current Issues:
+- Yaml output from puppet is not well-formed. 
+
+
+To Do
+- Create error handling for any type of connection issues
+- Create documentation 
+- Create unit tests
+- Create class and functions that format results to pretty format
