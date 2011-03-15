@@ -7,11 +7,11 @@ class pypuppet:
 
     # Setup the connection object with curl
     conn = pycurl.Curl()
-    cert="/etc/puppetlabs/puppet/ssl/certs/cobbler.logicminds.corp.pem"
-    key="/etc/puppetlabs/puppet/ssl/private_keys/cobbler.logicminds.corp.pem"
-    host = 'https://puppet.logicminds.corp'
-    port = '8140'
-    url = "https://puppet.logicminds.corp:8140/production/facts/cobbler.logicminds.corp"
+    cert = None
+    key = None
+    host = None
+    port = None
+    url = None
     rawyaml = StringIO.StringIO()
     
     #def __init__(self):
@@ -61,7 +61,10 @@ class pypuppet:
         self.conn.setopt(self.conn.WRITEFUNCTION, self.rawyaml.write)
         self.conn.perform()
         self.conn.close()
+        
         # Below is the yaml encoded output from puppet
+        # Puppet isn't outputting well formatted yaml code that
+        # this parser can parse so this is disabled for now
 #        contents = self.rawyaml.getvalue()
         # Process the contents and Return the contents in a python object
 #        return yaml.load(contents)

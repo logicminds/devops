@@ -3,7 +3,7 @@ from base import pypuppet
 
 # Create Test of functions
 
-# You can either pass in all the connection info at object creation time or via connect and other set commands
+# You can pass in all the connection info via connect and other set commands
 cert="/etc/puppetlabs/puppet/ssl/certs/cobbler.logicminds.corp.pem"
 key="/etc/puppetlabs/puppet/ssl/private_keys/cobbler.logicminds.corp.pem"
 
