@@ -1,7 +1,7 @@
 import pycurl
-import StringIO
+import cStringIO
 import yaml
-
+import re
 
 class pypuppet:
 
@@ -12,7 +12,7 @@ class pypuppet:
     host = None
     port = None
     url = None
-    rawyaml = StringIO.StringIO()
+    rawyaml = cStringIO.StringIO()
     
     #def __init__(self):
         
@@ -32,6 +32,7 @@ class pypuppet:
         self.connect()
 
     def setkey(self,key):
+        # The key is considered the endpoint or host
         self.key = key
         self.connect()
                 
@@ -52,22 +53,29 @@ class pypuppet:
        
     def createurl(self):
        self.url = "https://%s:%s/%s/%s/%s" % (self.host,self.port,self.environment,self.resource,self.key)
-       print self.url
        self.conn.setopt(self.conn.URL, self.url)
        
     def decode(self):
         # Need to check for certs
-        
+        tempstring = None
         self.conn.setopt(self.conn.WRITEFUNCTION, self.rawyaml.write)
         self.conn.perform()
-        self.conn.close()
+        # This failes on subsequent calls if we close it
+        #self.conn.close()
         
         # Below is the yaml encoded output from puppet
         # Puppet isn't outputting well formatted yaml code that
         # this parser can parse so this is disabled for now
-#        contents = self.rawyaml.getvalue()
-        # Process the contents and Return the contents in a python object
-#        return yaml.load(contents)
+        contents = self.rawyaml.getvalue()
+        tempstring = contents
+         # We will need a smart regex pattern to remove all the ruby object code tags
+         # in the yaml output from puppet
+         # examples of what is removed by regex
+         #!ruby/object:Puppet::Node::Facts
+        tempstring = re.sub('.*\!ruby\/.*','',tempstring)
+        
+        #load the contents and Return the contents in a python object
+        return yaml.load(tempstring)
 
     def setcerts(self,cert, key):
         # Include the path to the cert and path to the private key
