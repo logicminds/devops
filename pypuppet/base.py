@@ -1,100 +1,51 @@
-import pycurl
-import cStringIO
-import yaml
-import re
+from puppetapi import puppetclient
+from node import Node
 
-class pypuppet:
 
-    # Setup the connection object with curl
-    conn = pycurl.Curl()
-    cert = None
-    key = None
-    host = None
-    port = None
-    url = None
-    rawyaml = cStringIO.StringIO()
+#This class is more of a wrapper for the puppetclient class as well as providing an easy way to get and set
+# specific items that cannot be done at the node level
+
+class puppetbase:
+    puppet = None
     
-    #def __init__(self):
-        
-       
-    def sethost(self,host, port):
-        # set the host if you need to set it after creating the object
-        self.host = host
-        self.port = port
-        self.connect()
+    def __init__(self, pupclient):
+        # This is mandatory that you set the client
+        self.puppet = pupclient
 
-    def setenvironment(self,environment):
-        self.environment = environment
-        self.connect()
+    #def signcerts(self,cert,key):
+    #    self.puppet.setcerts(cert,key)
 
-    def setresource(self,resource):
-        self.resource = resource
-        self.connect()
+    def setcertsigning(self):
+        return None
 
-    def setkey(self,key):
-        # The key is considered the endpoint or host
-        self.key = key
-        self.connect()
-                
-    def connect(self,host=None, port=None, environment=None, resource=None, key=None):
-       # This function is called by many of the set functions in order to re-create the url pattern
-       # Build connection string url
-      
-       self.host = host
-       self.port = port
-       self.environment = environment
-       self.resource = resource
-       self.key = key
-       # We will need to test all of these attributes before moving forward
-       # create error if any of these are still undefined 
-       # Update url and pycurl object 
-       self.createurl()
-       self.setcurlattrs()
-       
-    def createurl(self):
-       self.url = "https://%s:%s/%s/%s/%s" % (self.host,self.port,self.environment,self.resource,self.key)
-       self.conn.setopt(self.conn.URL, self.url)
-       
-    def decode(self):
-        # Need to check for certs
-        tempstring = None
-        self.conn.setopt(self.conn.WRITEFUNCTION, self.rawyaml.write)
-        self.conn.perform()
-        # This failes on subsequent calls if we close it
-        #self.conn.close()
-        
-        # Below is the yaml encoded output from puppet
-        # Puppet isn't outputting well formatted yaml code that
-        # this parser can parse so this is disabled for now
-        contents = self.rawyaml.getvalue()
-        tempstring = contents
-         # We will need a smart regex pattern to remove all the ruby object code tags
-         # in the yaml output from puppet
-         # examples of what is removed by regex
-         #!ruby/object:Puppet::Node::Facts
-        tempstring = re.sub('.*\!ruby\/.*','',tempstring)
-        
-        #load the contents and Return the contents in a python object
-        return yaml.load(tempstring)
+    def getnodes(self):
+        # Return a list of nodes that are under puppet control
+        return getcertlist()
 
-    def setcerts(self,cert, key):
-        # Include the path to the cert and path to the private key
-        # If these Certs are not set we cannot get any data out of puppet
-        self.cert = cert
-        self.key = key
-        # Lets put some cert verfication here
-        self.conn.setopt(self.conn.SSL_VERIFYPEER, 0)
-        self.conn.setopt(self.conn.SSL_VERIFYHOST, 0)
-        self.conn.setopt(self.conn.SSLCERT,self.cert)
-        self.conn.setopt(self.conn.SSLKEY,self.key)
+    def getnode(self,fqdn):
+        # Return a node object of the hostname
+        # set the key "hostname" then return 
+        self.puppet.setkey(fqdn)
+        puppetnode = Node(self.puppet.decode())
+        return puppetnode
 
-    def setcurlattrs(self,format='yaml'):
-        # Setup the output to Yaml
-        # setopt doesn't seem to like passing in strings
-        formatstring = '[\"Accept: %s\"]' % (format)
-        self.conn.setopt(self.conn.HTTPHEADER, ["Accept: yaml"])
-        #self.conn.setopt(self.conn.VERBOSE,1)
-        #c.setopt(conn.ENCODING, 'Accept: yaml')
+    def getrejectedcerts(self):
+        self.puppet.setresource("certificate_revocation_list")
+        self.puppet.setkey("ca")
+        rejected = self.puppet.decode()
+        return rejected
 
-        # So far this is the only attribute I can think of
+    def getcertlist(self):
+        return []
+
+    def getcertreqs(self, key='all'):
+        self.puppet.setresource("certificate_requests")
+        self.puppet.setkey(key)
+        reqs = self.puppet.decode()
+        return reqs
+    
+    def gethostlist(self):
+        return []
+    
+
 
