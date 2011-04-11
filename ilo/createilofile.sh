@@ -4,11 +4,19 @@
 # Date: 1-26-2010
 # This script will create the xml file for each server and set the ilo name, admin
 # using the hponcfg utility.  This must be run on each server
+# Whats nice about this script is that you don't need the ilo password that is a afixed to the system
+
+# Notes:
+# - Different versions of ilo firmware use different RIBCL Versions and cannot parse newer code with older firmware.  If your system
+# Is really old you may need to update the ilo firmware first and see what XML config commands are supported.
+# The easiest way to start is to export your current ilo config  using "hponfig -w iloconfig.xml"
+
+
 HOST=`hostname -s`
 cat > /root/setupilo.xml << EOF
 
 
-# You need to change the Login info in the tag since its ignored
+# You don't need to change the Login info in the tag since its ignored
 <RIBCL VERSION="2.0">
   <LOGIN USER_LOGIN="adminname" PASSWORD="password">
     <SERVER_INFO MODE="write">
