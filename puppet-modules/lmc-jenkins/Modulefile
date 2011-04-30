@@ -1,4 +1,4 @@
-name    'cosman-jenkins'
+name    'lmc-jenkins'
 version '0.0.1'
 source 'UNKNOWN'
 author 'cosman'
