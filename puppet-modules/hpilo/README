@@ -2,12 +2,16 @@ Author: Corey Osman
 Date: 7/29/2011
 Email: corey@logicminds.biz
 
-This module will configure your hp ilo card automatically without the use of a password that is phsycially printed on the server.
+This module will configure your hp ilo card automatically without 
+the use of a password that is phsycially printed on the server.
 
-This module is very useful for when you don't have physically access to the server and can't get the ilo admin password or you have many servers to configure and the web interface just takes to long.  Fear not, there is no a puppet module to help you out.
+This module is very useful for when you don't have physically access
+to the server and can't get the ilo admin password or you have many
+servers to configure and the web interface just takes to long. 
+Fear not, there is now a puppet module to help you out.
 
 This is the hpilo module. Please see manifests/base.pp for more info.
-You will need to make changes int he base.pp file to suit your environment.
+You will need to make changes to the base.pp file to suit your environment.
 
 If you have suggestions on how to improve this module please send me an email.
 
@@ -22,3 +26,9 @@ hpilo::base = the base class for hpilo::dhcp and hpilo::static
 
 Requirements:
 1. You must have the proliant support pack installed, specifically the hponcfg utility in /sbin
+
+How it works:
+1. A ilo configuration file is automatically created via the iloconfig.erb template and your variables in manifests/base.pp
+2. The ilo config file is placed in /ilosettings.xml on the node
+3. if /sbin/hponcfg exists, puppet will then configure the ilo interface with this ilosettings.xml file
+4. Your ilo card will reset after the settings have been applied with the new values defined in ilosettings.xml
