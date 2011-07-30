@@ -1,0 +1,4 @@
+hpilo
+
+This is the hpilo module. Please see manifests/base.pp for more info.
+You will need to make changes int he base.pp file to suit your environment
