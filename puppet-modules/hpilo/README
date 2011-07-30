@@ -1,4 +1,24 @@
-hpilo
+Author: Corey Osman
+Date: 7/29/2011
+Email: corey@logicminds.biz
+
+This module will configure your hp ilo card automatically without the use of a password that is phsycially printed on the server.
+
+This module is very useful for when you don't have physically access to the server and can't get the ilo admin password or you have many servers to configure and the web interface just takes to long.  Fear not, there is no a puppet module to help you out.
 
 This is the hpilo module. Please see manifests/base.pp for more info.
-You will need to make changes int he base.pp file to suit your environment
+You will need to make changes int he base.pp file to suit your environment.
+
+If you have suggestions on how to improve this module please send me an email.
+
+
+Usage:
+1. Configure the manifests/base.pp file to suit your environment
+2. Assign hpilo::dhcp or hpilo::static class to your system(s).
+
+hpilo::dhcp = uses your dhcp to assign the IP to the ilo
+hpilo::static = assigns a static ip to the ilo
+hpilo::base = the base class for hpilo::dhcp and hpilo::static
+
+Requirements:
+1. You must have the proliant support pack installed, specifically the hponcfg utility in /sbin
